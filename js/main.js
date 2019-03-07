@@ -7,15 +7,19 @@ requirejs.config({
   //never includes a ".js" extension since
   //the paths config could be for a directory.
   paths: {
-    components: "/components"
+    components: "/components",
+    knockout: "/js/external/knockout-3.5.0",
+    text: "/js/external/text",
+    domReady: "/js/external/domReady"
   }
 });
 
 require([
-  "external/knockout-3.5.0",
-  "appViewModel",
-  "external/domReady!",
-  "registerComponents"
+  "knockout",
+  "app-viewmodel",
+  "domReady!",
+  "register-components",
+  "register-bindings"
 ], function(ko, appViewModel) {
   ko.applyBindings(new appViewModel());
 });

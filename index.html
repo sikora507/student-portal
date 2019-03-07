@@ -1,59 +1,28 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Student portal the way it should be done</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-      crossorigin="anonymous"
-    />
-    <link rel="stylesheet" href="/css/main.css" />
-    <script
-      type="text/javascript"
-      data-main="/js/main.js"
-      src="https://requirejs.org/docs/release/2.3.6/minified/require.js"
-    ></script>
-  </head>
-  <body id="app">
-    <nav class="navbar navbar-expand-lg  fixed-top navbar-light bg-light">
-      <div class="container">
-        <a class="navbar-brand" href="/">Student portal</a>
-        <ul class="navbar-nav mr-auto">
-          <li
-            class="nav-item"
-            data-bind="css: { active: contentComponent() == 'main' }"
-          >
-            <a
-              class="nav-link"
-              href="#"
-              data-bind="click: function(){setContent('main');}"
-              >Main</a
-            >
-          </li>
-          <li
-            class="nav-item"
-            data-bind="css: { active: contentComponent() == 'apply-now' }"
-          >
-            <a
-              class="nav-link"
-              href="#"
-              data-bind="click: function(){setContent('apply-now');}"
-              >Apply now</a
-            >
-          </li>
-        </ul>
-      </div>
-    </nav>
-    <main class="container" data-bind="component: contentComponent"></main>
 
-    <nav class="navbar fixed-bottom navbar-light bg-light">
-      <div class="container">
-        <a class="navbar-brand" href="#">&copy;CAMS TRS 1999 - 2019</a>
-      </div>
-    </nav>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Student portal the way it should be done</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/css/main.css" />
+  <script type="text/javascript" data-main="/js/main.js"
+    src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+</head>
+
+<body id="app" data-bind="event: {setContent: function(item, event){setContent(event.detail.name);}}">
+  <main-menu></main-menu>
+
+  <div class="container" data-bind="component: contentComponent"></div>
+
+  <nav class="navbar fixed-bottom navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="#">&copy;CAMS TRS 1999 - 2019</a>
+    </div>
+  </nav>
+</body>
+
 </html>

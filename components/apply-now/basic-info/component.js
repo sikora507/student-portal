@@ -1,4 +1,4 @@
-define(["external/knockout-3.5.0"], function(ko) {
+define(["knockout"], function(ko) {
   function viewModel() {
     var self = this;
     self.testData = ko.observable("test data");
