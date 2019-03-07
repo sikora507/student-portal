@@ -19,8 +19,8 @@ define(["knockout"], function(ko) {
     viewModel: { require: "components/apply-now/academic/academic-viewmodel" }
   });
   ko.components.register("apply-now-highschool-info", {
-    template: { require: "text!components/apply-now/highschool-info/component.html" },
-    viewModel: { require: "components/apply-now/highschool-info/component" }
+    template: { require: "text!components/apply-now/highschool-info/highschool-info-component.html" },
+    viewModel: { require: "components/apply-now/highschool-info/highschool-info-viewmodel" }
   });
   ko.components.register("apply-now-navigation-bar", {
     template: { require: "text!components/apply-now/navigation-bar/navigation-bar-component.html" },

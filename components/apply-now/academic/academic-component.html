@@ -1,6 +1,2 @@
 Select academic level
-<select class="custom-select">
-    <option selected>Select One</option>
-    <option value="graduate">Graduate</option>
-    <option value="undergraduate">Undergraduate</option>
-</select>
+<select class="custom-select" data-bind="options: academicLevels, optionsText: 'name', optionsValue: 'value', value: selectedAcademicLevel"></select>
