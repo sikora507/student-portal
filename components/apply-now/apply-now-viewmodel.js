@@ -5,15 +5,17 @@ define([
   function viewModel() {
     var self = this;
     self.components = ko.observableArray([
-      {name: 'Basic info', componentName: 'basic-info'},
-      {name: 'Admission', componentName: 'admission'},
-      {name: 'High School Info', componentName: 'highschool-info'}
+      {name: 'Basic info', componentName: 'apply-now-basic-info'},
+      {name: 'Academic', componentName: 'apply-now-academic'},
+      {name: 'High School Info', componentName: 'apply-now-highschool-info'}
     ]);
     self.selectedSection = ko.observable(self.components()[0]);
     self.selectApplyNowSection = function(component){
       self.selectedSection(component);
     }
-
+    self.selectedComponentName = ko.computed(function(){
+      return self.selectedSection().componentName;
+    });
     self.goToNextApplyNowStep = function(){
       if(self.canGoToNextStep()){
         let index = getSelectedComponentIndex();

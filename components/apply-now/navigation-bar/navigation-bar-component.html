@@ -1,4 +1,4 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="nav-item nav-link mr-auto" href="#" data-bind="clickEmit: 'goToPrevApplyNowStep', enable: prevActive">Prev</a>
-  <a class="nav-item nav-link" href="#" data-bind="clickEmit: 'goToNextApplyNowStep', enable: nextActive">Next</a>
+  <a class="nav-item nav-link mr-auto" href="#" data-bind="clickEmit: 'goToPrevApplyNowStep', css: {disabled: !prevActive()}">Prev</a>
+  <a class="nav-item nav-link" href="#" data-bind="clickEmit: 'goToNextApplyNowStep', css: {disabled: !nextActive()}">Next</a>
 </nav>
