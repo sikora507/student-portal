@@ -11,16 +11,21 @@ Problems we suffer:
 
 Adding new functionality takes enormous amount of time and debugging existing issues is very slow.
 
+
 How to fix these issues:
 * Introduce [knockout components](https://knockoutjs.com/documentation/component-overview.html) which will encapslate logic it only cares about (single responsibility)
 * Introduce [RequireJS](https://requirejs.org/). It will help us divide our application into small modules and load them on demand without worying about which javascript file depends on other file (dependency injection). 
 
+RequireJS also allows us to not use any bundling before deployment like webpack which makes **the easiest learning curve as it gets** that allows to solve our problems. We only need to load single `<script>` tag which is RequireJs. It will handle loading of all other scripts and their dependencies asynchronously.
+
+---
+
 ## How to run this application
 
 You will need http server in order to make ajax requests. 
-You can deploy this app to IIS server, but there are simpler solutions:
+**You can deploy this app to IIS server, but there are simpler solutions:**
 
-### VS Code exapmle:
+### Start http server using VS Code:
 If you have **Visual Studio Code** installed, there is an extension for hosting simple http server with live-reloading feature.
 
 ![](/readme_images/2019-03-11_10h09_38.png)
@@ -32,7 +37,7 @@ You can then browse the application on 127.0.0.1:5500
 
 ---
 
-### Python example:
+### Start http server using python:
 You can also use one-liner command in [python](https://www.python.org/) in your commandline to host simple http server in current directory:
 ```
 python -m http.server 8080
@@ -59,4 +64,41 @@ Features implemented:
 * Passing data to child components via properties
 * Asynchronous module loading by RequireJS
 * Each component has its own small state
-* Whole _Apply Now_ section has access to it's child viewmodels to gather all information needed before submit.
+* Whole _Apply Now_ section has access to it's child view models to gather all information needed before submit.
+* Showing / hiding apply now stage based on things selected in earlier stages
+
+## Application structure
+
+This is the root folder of the application:
+
+![](/readme_images/2019-03-11_10h25_06.png)
+
+### Application starts in **index.html** file:
+
+![](/readme_images/2019-03-11_10h37_19.png)
+
+1. The application loads RequireJS library and after that runs main.js file
+2. Event data binding from KnockoutJS is used to listen to custom 'setContent' event to know which component should be displayed in the container (4)
+3. Main menu is extracted to a component
+4. Main container acting as a dynamic placeholder for main component / page using knockout's component binding.
+
+### In the **main.js** file we have:
+
+![](/readme_images/2019-03-11_10h43_33.png)
+
+First is the RequireJS config, very small and almost self-explanatory:
+* **baseUrl** sets the default location of our script fiels, so if we need to get some javascript module in the application, we won't need to write 'js/somemodule' but only 'somemodule' - it's a small convenience.
+* **paths** are another shorthands for getting right modules. If we want to reference knockout, we won't need to write every time '/js/external/knockout-3.5.0' but only 'knockout'. The same goes for next lines. Things worth mentioning is **text** and **domReady** these are small RequireJS plugins for loading html templates for knockout components (text plugin) and determining when DOM is ready (domReady) to start the application after index.html was fully loaded.
+
+**require** function starts the application by utilizing knockout's applyBindings with the base application's view model appViewModel(). Note how we're passing parameters here. First parameter of ther require function is the array with our dependencies, second parameter is the callback function which will get these parameters resolved in javascript variables, so that **'knockout'** becomes **ko** and **'app-viewmodel'** becomes **appViewModel**. Rest of the parameters  is not needed in our callback function, but putting them in the dependencies array will invoke them so 'register-components' module and 'register-bindings' module will be triggered.
+
+
+### Components registration in **register-components.js**:
+
+![](/readme_images/2019-03-11_10h57_16.png)
+
+Here we register all components used by this application.
+Note that this is wrapped by RequireJS's define function. Every module we want to use with RequireJS library must use this syntax. The first parameter is the dependency we want to inject - in this case this is the Knockout library because we want to use it's ko.components.register.
+
+Each components needs to have it's own template and viewModel. Using RequireJS allows us to store html templates in separate files and load them via text plugin.
+
