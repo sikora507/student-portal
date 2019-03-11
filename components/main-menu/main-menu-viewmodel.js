@@ -1,4 +1,4 @@
-define(['knockout'], function(ko, emitter){
+define(['knockout'], function(ko){
     function viewModel() {
         var self = this;
         self.setActiveMenuItem = function(componentName){

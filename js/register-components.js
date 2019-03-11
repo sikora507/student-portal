@@ -26,4 +26,7 @@ define(["knockout"], function(ko) {
     template: { require: "text!components/apply-now/navigation-bar/navigation-bar-component.html" },
     viewModel: { require: "components/apply-now/navigation-bar/navigation-bar-viewmodel" }
   });
+  ko.components.register("loader", {
+    template: { require: "text!components/loader/loader-component.html" }
+  });
 });
