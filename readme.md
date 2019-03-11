@@ -102,3 +102,71 @@ Note that this is wrapped by RequireJS's define function. Every module we want t
 
 Each components needs to have it's own template and viewModel. Using RequireJS allows us to store html templates in separate files and load them via text plugin.
 
+### Main menu component:
+Here is the main menu component's template:
+``` html
+<nav class="navbar navbar-expand-lg  fixed-top navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="/">Student portal</a>
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item" data-bind="css: { active: selectedMenuItem() == 'home-page' }">
+          <a class="nav-link" href="#" data-bind="click: function(){setActiveMenuItem('home-page');}, clickEmit: {name: 'setContent', data: {name: 'home-page'}}">Main</a>
+        </li>
+        <li class="nav-item" data-bind="css: { active: selectedMenuItem() == 'apply-now' }">
+          <a class="nav-link" href="#" data-bind="click: function(){setActiveMenuItem('apply-now');}, clickEmit: {name: 'setContent', data: {name: 'apply-now'}}">Apply now</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  ```
+  And it's view model:
+  ``` javascript
+define(['knockout'], function(ko){
+    function viewModel() {
+        var self = this;
+        self.setActiveMenuItem = function(componentName){
+            self.selectedMenuItem(componentName);
+        }
+        self.selectedMenuItem= ko.observable('home-page');
+
+    }
+    vm = new viewModel();
+    return function(){return viewModel;};
+});
+  ```
+  It's a regular knockout template with only one custom thing - clickEmit binding.
+  This is a custom knockout binding defined in '/js/register-bindings.js' file. Thanks to that, we can propagate events 'up' the DOM tree and propagate properties 'down' like in React or Vue. This event propagation was missing in knockout and it was needed to upgrade cross-component communication with today's standards.
+
+  ### Custom clickEmit binding in **register-bindings.js**:
+  ``` javascript
+  define(["knockout", 'eventEmitter'], function (ko, emitter) {
+  ko.bindingHandlers.clickEmit = {
+    init: function (element, valueAccessor) {
+      var accessor = valueAccessor();
+
+      element.addEventListener("click", function () {
+        let data = null;
+        let name = null;
+        if (typeof (accessor) === 'object') {
+          data = accessor.data;
+          name = accessor.name;
+        } else {
+          name = accessor;
+        }
+        emitter.emit(element, name, data);
+      });
+    }
+  };
+});
+  ```
+This is a simple knockout binding that triggers on click event and get's the event's custom data through valueAccessor. It supports parameters as objects like in main-menu-component.html
+```
+clickEmit: {name: 'setContent', data: {name: 'apply-now'}}
+```
+and it can also be used without any parameters like **in navigation-bar-component.html** for _Apply Now_ section:
+```
+clickEmit: 'goToPrevApplyNowStep'
+```
+
+## Summary
+These are the basics of the architecture used by this approach. Take a look at the rest of the application and see how it works. Files are small and self-contained so it's much easier to understand.
