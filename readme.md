@@ -71,7 +71,7 @@ Features implemented:
 
 This is the root folder of the application:
 
-![](/readme_images/2019-03-11_10h25_06.png)
+![](/readme_images/2019-03-14_13h30_39.png)
 
 ### Application starts in **index.html** file:
 
@@ -84,13 +84,13 @@ This is the root folder of the application:
 
 ### In the **main.js** file we have:
 
-![](/readme_images/2019-03-11_10h43_33.png)
+![](/readme_images/2019-03-14_13h31_32.png)
 
 First is the RequireJS config, very small and almost self-explanatory:
 * **baseUrl** sets the default location of our script fiels, so if we need to get some javascript module in the application, we won't need to write 'js/somemodule' but only 'somemodule' - it's a small convenience.
 * **paths** are another shorthands for getting right modules. If we want to reference knockout, we won't need to write every time '/js/external/knockout-3.5.0' but only 'knockout'. The same goes for next lines. Things worth mentioning is **text** and **domReady** these are small RequireJS plugins for loading html templates for knockout components (text plugin) and determining when DOM is ready (domReady) to start the application after index.html was fully loaded.
 
-**require** function starts the application by utilizing knockout's applyBindings with the base application's view model appViewModel(). Note how we're passing parameters here. First parameter of ther require function is the array with our dependencies, second parameter is the callback function which will get these parameters resolved in javascript variables, so that **'knockout'** becomes **ko** and **'app-viewmodel'** becomes **appViewModel**. Rest of the parameters  is not needed in our callback function, but putting them in the dependencies array will invoke them so 'register-components' module and 'register-bindings' module will be triggered.
+**require** function starts the application by utilizing knockout's applyBindings with the base application's view model appViewModel(). Note how we're passing parameters here. First parameter of the require function is the array with our dependencies, second parameter is the callback function which will get these parameters resolved in javascript variables, so that **'knockout'** becomes **ko** and **'app-viewmodel'** becomes **appViewModel**. Rest of the parameters  is not needed in our callback function, but putting them in the dependencies array will invoke them so 'register-components' module and 'message-bus' module will be triggered.
 
 
 ### Components registration in **register-components.js**:
@@ -110,63 +110,62 @@ Here is the main menu component's template:
       <a class="navbar-brand" href="/">Student portal</a>
       <ul class="navbar-nav mr-auto">
         <li class="nav-item" data-bind="css: { active: selectedMenuItem() == 'home-page' }">
-          <a class="nav-link" href="#" data-bind="click: function(){setActiveMenuItem('home-page');}, clickEmit: {name: 'setContent', data: {name: 'home-page'}}">Main</a>
+          <a class="nav-link" href="#" data-bind="click: function(){setActiveMenuItem('home-page');}">Main</a>
         </li>
         <li class="nav-item" data-bind="css: { active: selectedMenuItem() == 'apply-now' }">
-          <a class="nav-link" href="#" data-bind="click: function(){setActiveMenuItem('apply-now');}, clickEmit: {name: 'setContent', data: {name: 'apply-now'}}">Apply now</a>
+          <a class="nav-link" href="#" data-bind="click: function(){setActiveMenuItem('apply-now');}">Apply now</a>
         </li>
       </ul>
     </div>
   </nav>
   ```
-  And it's view model:
-  ``` javascript
-define(['knockout'], function(ko){
+And it's view model:
+``` javascript
+define(['knockout', 'message-bus'], function(ko, messageBus){
     function viewModel() {
         var self = this;
         self.setActiveMenuItem = function(componentName){
             self.selectedMenuItem(componentName);
         }
-        self.selectedMenuItem= ko.observable('home-page');
-
+        self.selectedMenuItem = ko.observable('home-page');
+        
+        self.selectedMenuItem.subscribe(function(newValue){
+            messageBus.sendEvent('menu-item-changed', newValue)
+        });
     }
     vm = new viewModel();
     return function(){return viewModel;};
 });
-  ```
-  It's a regular knockout template with only one custom thing - clickEmit binding.
-  This is a custom knockout binding defined in '/js/register-bindings.js' file. Thanks to that, we can propagate events 'up' the DOM tree and propagate properties 'down' like in React or Vue. This event propagation was missing in knockout and it was needed to upgrade cross-component communication with today's standards.
+```
+It's a regular knockout template with only one custom thing - **message bus**.
 
-  ### Custom clickEmit binding in **register-bindings.js**:
-  ``` javascript
-  define(["knockout", 'eventEmitter'], function (ko, emitter) {
-  ko.bindingHandlers.clickEmit = {
-    init: function (element, valueAccessor) {
-      var accessor = valueAccessor();
+It's defined in '/js/message-bus.js' file. Thanks to it we can utilize it's 2 methods:
+* `sendEvent(eventName, data)`
+* `onEvent(eventName, callback(data))`
 
-      element.addEventListener("click", function () {
-        let data = null;
-        let name = null;
-        if (typeof (accessor) === 'object') {
-          data = accessor.data;
-          name = accessor.name;
-        } else {
-          name = accessor;
-        }
-        emitter.emit(element, name, data);
+Here we are using sendEvent function with event name 'menu-item-changed' and data wihich is the newly selected component name.
+
+Main view model is listening to this event to display proper component in the main container:
+### app-viewmodel.js :
+
+``` javascript
+define([
+    "knockout",
+    "message-bus"
+  ], function(ko, messageBus) {
+    return function appViewModel() {
+      var self = this;
+      self.contentComponent = ko.observable("home-page");
+      messageBus.onEvent('menu-item-changed', function(data){
+        self.contentComponent(data);
       });
-    }
-  };
-});
+      self.setContent = function(componentName) {
+        self.contentComponent(componentName);
+      };
+    };
+  });
+  
   ```
-This is a simple knockout binding that triggers on click event and get's the event's custom data through valueAccessor. It supports parameters as objects like in main-menu-component.html
-```
-clickEmit: {name: 'setContent', data: {name: 'apply-now'}}
-```
-and it can also be used without any parameters like **in navigation-bar-component.html** for _Apply Now_ section:
-```
-clickEmit: 'goToPrevApplyNowStep'
-```
 
 ## Summary
-These are the basics of the architecture used by this approach. Take a look at the rest of the application and see how it works. Files are small and self-contained so it's much easier to understand.
+These are the basics of the architecture used by this approach. Take a look at the rest of the application and see how it works. Files are small and self-contained so it's easy to understand.
