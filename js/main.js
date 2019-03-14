@@ -14,7 +14,7 @@ require([
   "app-viewmodel",
   "domReady!",
   "register-components",
-  "register-bindings"
+  "message-bus"
 ], function(ko, appViewModel) {
   ko.applyBindings(new appViewModel());
 });

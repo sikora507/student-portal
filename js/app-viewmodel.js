@@ -1,10 +1,15 @@
 define([
-    "knockout"
-  ], function(ko) {
+    "knockout",
+    "message-bus"
+  ], function(ko, messageBus) {
     return function appViewModel() {
-      this.contentComponent = ko.observable("home-page");
-      this.setContent = function(componentName) {
-        this.contentComponent(componentName);
+      var self = this;
+      self.contentComponent = ko.observable("home-page");
+      messageBus.onEvent('menu-item-changed', function(data){
+        self.contentComponent(data);
+      });
+      self.setContent = function(componentName) {
+        self.contentComponent(componentName);
       };
     };
   });

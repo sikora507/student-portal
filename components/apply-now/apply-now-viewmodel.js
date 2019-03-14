@@ -2,10 +2,20 @@ define([
   "knockout",
   "components/apply-now/basic-info/basic-info-viewmodel",
   "components/apply-now/academic/academic-viewmodel",
-  "components/apply-now/highschool-info/highschool-info-viewmodel"
-], function (ko, basicInfoVm, academicVm, highschoolInfoVm) {
+  "components/apply-now/highschool-info/highschool-info-viewmodel",
+  "message-bus"
+], function (ko, basicInfoVm, academicVm, highschoolInfoVm, messageBus) {
   function viewModel() {
     var self = this;
+
+    messageBus.onEvent("go-to-prev-apply-now-step", function(){
+      self.goToPrevApplyNowStep();
+    });
+
+    messageBus.onEvent("go-to-next-apply-now-step", function(){
+      self.goToNextApplyNowStep();
+    });
+
     self.components = ko.observableArray([
       { name: 'Basic info', componentName: 'apply-now-basic-info', vm: basicInfoVm() },
       { name: 'Academic', componentName: 'apply-now-academic', vm: academicVm() },
