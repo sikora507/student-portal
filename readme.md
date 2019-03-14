@@ -102,7 +102,7 @@ Note that this is wrapped by RequireJS's define function. Every module we want t
 
 Each components needs to have it's own template and viewModel. Using RequireJS allows us to store html templates in separate files and load them via text plugin.
 
-### Main menu component:
+### Cross component communication:
 Here is the main menu component's template:
 ``` html
 <nav class="navbar navbar-expand-lg  fixed-top navbar-light bg-light">
